@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Menu{% endblock %}
+
+{% block body %}
+
+{% if app.user %}
+<button><a href="/anounce/new">Créer une annonce</a></button>
+{% endif %}
+
+{% for anounce in Anounces %}
+    <h2> {{ anounce.title }} </h2>
+
+    {% if anounce.photo %}
+        <img src="{{anounce.photo}}" alt="">
+    {% else %}
+        <img src="build/images/noImage.e00652fb.jpg" alt="">           
+    {% endif %}
+
+    <button><a href="/anounce/{{ anounce.id }}">Voir l'annonce</a></button>
+{% endfor %}
+
+{% endblock %}

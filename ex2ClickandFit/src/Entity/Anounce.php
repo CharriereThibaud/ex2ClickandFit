@@ -23,16 +23,16 @@ class Anounce
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $Photo = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $Phone = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $PostalCode = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $Date = null;
 
-    #[ORM\ManyToOne(inversedBy: 'Anounces')]
+    #[ORM\ManyToOne(inversedBy: 'anounces')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $User = null;
 
@@ -82,7 +82,7 @@ class Anounce
         return $this->Phone;
     }
 
-    public function setPhone(?string $Phone): self
+    public function setPhone(string $Phone): self
     {
         $this->Phone = $Phone;
 
@@ -94,7 +94,7 @@ class Anounce
         return $this->PostalCode;
     }
 
-    public function setPostalCode(?string $PostalCode): self
+    public function setPostalCode(string $PostalCode): self
     {
         $this->PostalCode = $PostalCode;
 

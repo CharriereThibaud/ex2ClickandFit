@@ -12,6 +12,9 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
+        {% block header %}
+            <button><a href='{{ app.user ? 'logout' : 'login'}}'>{{ app.user ? 'Déconnexion' : 'Connexion'}}</a></button>
+        {% endblock %}
     </head>
     <body>
         {% block body %}{% endblock %}

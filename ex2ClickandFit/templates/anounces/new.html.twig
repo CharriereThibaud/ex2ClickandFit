@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer{% endblock %}
+
+{% block body %}
+
+{{ form_start(form) }}
+{{ form_widget(form) }}
+<button type="submit">Créer l'anonce</button>
+{{ form_end(form) }}
+
+{% endblock %}

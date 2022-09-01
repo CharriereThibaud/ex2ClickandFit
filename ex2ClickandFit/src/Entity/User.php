@@ -6,36 +6,46 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $Name = null;
+    #[ORM\Column(length: 180, unique: true)]
+    private ?string $email = null;
+
+    #[ORM\Column]
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $FirstName = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Email = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $Phone = null;
+    private ?string $LastName = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Password = null;
+    private ?string $Phone = null;
 
     #[ORM\OneToMany(mappedBy: 'User', targetEntity: Anounce::class)]
-    private Collection $Anounces;
+    private Collection $anounces;
 
     public function __construct()
     {
-        $this->Anounces = new ArrayCollection();
+        $this->anounces = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -43,16 +53,69 @@ class User
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getEmail(): ?string
     {
-        return $this->Name;
+        return $this->email;
     }
 
-    public function setName(?string $Name): self
+    public function setEmail(string $email): self
     {
-        $this->Name = $Name;
+        $this->email = $email;
 
         return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 
     public function getFirstName(): ?string
@@ -60,21 +123,21 @@ class User
         return $this->FirstName;
     }
 
-    public function setFirstName(string $FirstName): self
+    public function setFirstName(?string $FirstName): self
     {
         $this->FirstName = $FirstName;
 
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getLastName(): ?string
     {
-        return $this->Email;
+        return $this->LastName;
     }
 
-    public function setEmail(string $Email): self
+    public function setLastName(string $LastName): self
     {
-        $this->Email = $Email;
+        $this->LastName = $LastName;
 
         return $this;
     }
@@ -84,21 +147,9 @@ class User
         return $this->Phone;
     }
 
-    public function setPhone(?string $Phone): self
+    public function setPhone(string $Phone): self
     {
         $this->Phone = $Phone;
-
-        return $this;
-    }
-
-    public function getPassword(): ?string
-    {
-        return $this->Password;
-    }
-
-    public function setPassword(string $Password): self
-    {
-        $this->Password = $Password;
 
         return $this;
     }
@@ -108,13 +159,13 @@ class User
      */
     public function getAnounces(): Collection
     {
-        return $this->Anounces;
+        return $this->anounces;
     }
 
     public function addAnounce(Anounce $anounce): self
     {
-        if (!$this->Anounces->contains($anounce)) {
-            $this->Anounces->add($anounce);
+        if (!$this->anounces->contains($anounce)) {
+            $this->anounces->add($anounce);
             $anounce->setUser($this);
         }
 
@@ -123,7 +174,7 @@ class User
 
     public function removeAnounce(Anounce $anounce): self
     {
-        if ($this->Anounces->removeElement($anounce)) {
+        if ($this->anounces->removeElement($anounce)) {
             // set the owning side to null (unless already changed)
             if ($anounce->getUser() === $this) {
                 $anounce->setUser(null);

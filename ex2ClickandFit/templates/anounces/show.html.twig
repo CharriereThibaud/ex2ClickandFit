@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détail{% endblock %}
+
+{% block body %}
+
+<button><a href="/menu">Retour au menu</a></button>
+
+<h1>{{ Anounce.title }}</h1>
+
+{% if Anounce.photo %}
+    <img src="{{ Anounce.photo }}" alt="">
+{% else %}
+    <img src="../build/images/noImage.e00652fb.jpg" alt="">           
+{% endif %}
+
+<h3>{{ Anounce.postalCode }}</h3>
+
+<p>{{ Anounce.description }}</p>
+
+<p>Téléphone: {{ Anounce.phone }}</p>
+
+{% if app.user %}
+    {% if app.user.id == Anounce.user.id %}
+        <button><a href="/anounce/{{ Anounce.id }}/edit">Modifier l'annonce</a></button>
+        <button><a class="pl-10" href="/anounce/{{ Anounce.id }}/delete">Supprimer l'annonce</a></button>
+    {% endif %}
+{% endif %}
+
+{% endblock %}
